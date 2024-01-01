@@ -1,0 +1,440 @@
+#
+# CSE186 Assignment 8 Backend
+#
+
+openapi: '3.0.3'
+
+info:
+  description: CSE186 Assignment 8 Backend
+  version: 0.1.0
+  title: CSE186 Assignment 8 Backend
+
+servers:
+  - url: http://localhost:3010/v0
+
+paths:
+  /dummy:
+    get:
+      description: Dummy Endpoint
+      responses:
+        200:
+          description: Succesful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DummyResponse'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /login:
+    post:
+      description: Login
+      requestBody:
+        description: Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        200:
+          description: Email Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+  /mail:
+    get:
+      security:
+        - bearerAuth: []         
+      description: Returns all emails in mailbox
+      parameters:
+        - in: query
+          name: mailbox
+          required: true
+          schema:
+            type: string
+      responses:
+        401:
+          description: Unauthorised
+        200:
+          description: Emails Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mailbox'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+    post:
+      security:
+        - bearerAuth: []         
+      description: posts a new mail
+      requestBody:
+        description: Book to add
+        required: true
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostMail'
+      responses:
+        401:
+          description: Unauthorised
+        201:
+          description: Email Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailboxMail'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+  /boxnames:
+    get:
+      security:
+        - bearerAuth: []         
+      description: Returns all mailbox names
+      responses:
+        401:
+          description: Unauthorised
+        200:
+          description: Emails Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailboxNameArray'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+    post:
+      security:
+        - bearerAuth: []         
+      description: posts a new mailbox
+      requestBody:
+        description: mailbox to add
+        required: true
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailboxName'
+      responses:
+        401:
+          description: Unauthorised
+        201:
+          description: Email Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailboxName'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+  /mail/{id}:
+    get:
+      security:
+        - bearerAuth: []         
+      description: Returns one full email
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        401:
+          description: Unauthorised
+        200:
+          description: Emails Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OneMail'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+  /starred/{id}:
+    put:
+      security:
+        - bearerAuth: []         
+      description: switches the starred of email
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        401:
+          description: Unauthorised
+        204:
+          description: Emails Response
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+  /opened/{id}:
+    put:
+      security:
+        - bearerAuth: []         
+      description: switches the opened of email
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        401:
+          description: Unauthorised
+        204:
+          description: Emails Response
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+  /mailbox/{id}:
+    put:
+      security:
+        - bearerAuth: []         
+      description: switches the mailbox of email
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: mailbox
+          required: true
+          schema:
+            type: string
+      responses:
+        401:
+          description: Unauthorised
+        204:
+          description: Emails Response
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+  /search:
+    get:
+      security:
+        - bearerAuth: []         
+      description: Returns all emails in mailbox
+      parameters:
+        - in: query
+          name: search
+          required: true
+          schema:
+            type: string
+      responses:
+        401:
+          description: Unauthorised
+        200:
+          description: Emails Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mailbox'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+components:
+  schemas:
+    UnexpectedError:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+    Error:
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+    DummyResponse:
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    Credentials:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        accessToken:
+          type: string
+      required:
+        - name
+        - accessToken
+
+    Mailbox:
+      type: array
+      items:
+        $ref: '#/components/schemas/MailboxMail'
+
+    Person:
+      type: object
+      properties:
+        name:
+          type: string
+        email: 
+          type: string
+
+    MailboxMail:
+      type: object
+      properties:
+        id:
+          type: string
+        to:
+          $ref: '#/components/schemas/Person'
+        from:
+          $ref: '#/components/schemas/Person'
+        subject:
+          type: string
+        received:
+          type: string
+        starred:
+          type: boolean
+        opened:
+          type: boolean
+      required:
+        - id
+        - to
+        - subject
+        - received
+        - from
+        - starred
+        - opened
+
+    PostMail:
+      type: object
+      properties:
+        to_email:
+          type: string
+        subject:
+          type: string
+        content:
+          type: string
+      required:
+        - to_email
+        - subject
+        - content
+
+    MailboxNameArray:
+      type: array
+      items:
+        type: string
+
+    MailboxName:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+
+    OneMail:
+      type: object
+      properties:
+        id:
+          type: string
+        to:
+          $ref: '#/components/schemas/Person'
+        from:
+          $ref: '#/components/schemas/Person'
+        subject:
+          type: string
+        received:
+          type: string
+        mailbox:
+          type: string
+        content:
+          type: string
+        starred:
+          type: boolean
+        opened:
+          type: boolean
+      required:
+        - id
+        - to
+        - subject
+        - received
+        - from
+        - mailbox
+        - content
+        - starred
+        - opened
+
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
