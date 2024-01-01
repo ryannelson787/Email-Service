@@ -1,0 +1,1 @@
+This project is the result of roughly 2 weeks of work during an academic quarter (way too little time). This work is very rough, unpolished, and buggy due to the time constraints and personal complications. Howver, this project serves to my dedication, perseverence, and my ability to make a product. This project replicates a very basic Email service with a plethora of features.
